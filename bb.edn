@@ -4,9 +4,6 @@
  :tasks          {release
                   {:requires ([babashka.process :as p :refer [process]]
                               [clojure.string :as str])
-                   :doc      "Makes a tag and pushes it to Github to trigger release GH action."
-                   :task     (let [command (str/join " " (concat ["clojure -T:build show-version"] *command-line-args*))
-                                   version (str "v" (-> (process command {:out :string}) p/check :out))
-                                   rel (format "VERSION=%s git tag $VERSION && git push origin $VERSION" version)]
-                               (println "Initiate release version:" version)
-                               (shell rel))}}}
+                   :doc      "Makes a git tag and push it to the Github to trigger release with GH action."
+                   :task     (let [command (str/join " " (concat ["clojure -T:build show-version"] *command-line-args*))]
+                               (clojure command))}}}
