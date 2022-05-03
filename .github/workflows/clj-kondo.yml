@@ -1,4 +1,4 @@
-name: clj-kondo checks
+name: clj-kondo linting
 
 on: [push]
 
@@ -6,15 +6,9 @@ jobs:
   linting:
 
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
-      contents: write
-
     steps:
       - uses: actions/checkout@v3.0.2
       - uses: DeLaGuardo/clojure-lint-action@master
         with:
           clj-kondo-args: --lint src test
-          check-name: clj-kondo
           github_token: ${{ secrets.GITHUB_TOKEN }}
