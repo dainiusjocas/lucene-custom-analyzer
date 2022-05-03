@@ -12,6 +12,8 @@
 (def version (the-version (b/git-count-revs nil)))
 (def snapshot (the-version "999-SNAPSHOT"))
 
+(defn show-version [opts] (print (if (:snapshot opts) snapshot version)))
+
 (defn deploy "Deploy the JAR to Clojars." [opts]
   (-> opts
       (assoc :lib lib :version (if (:snapshot opts) snapshot version))
