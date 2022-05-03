@@ -15,7 +15,8 @@
 Dependencies:
 
 ```clojure
-{:deps {lt.jocas/lucene-custom-analyzer {:git/url "https://github.com/dainiusjocas/lucene-custom-analyzer.git"}}}
+{:deps {lt.jocas/lucene-custom-analyzer {:git/url "https://github.com/dainiusjocas/lucene-custom-analyzer.git"
+                                         :sha "5fc85d7ec2e58348964c5e1dd4ba8f050194597a"}}}
 ```
 
 Code:
