@@ -1,3 +1,7 @@
+[![Clojars Project](https://img.shields.io/clojars/v/lt.jocas/lucene-custom-analyzer.svg)](https://clojars.org/lt.jocas/lucene-custom-analyzer)
+[![cljdoc badge](https://cljdoc.org/badge/lt.jocas/lucene-custom-analyzer)](https://cljdoc.org/d/lt.jocas/lucene-custom-analyzer/CURRENT)
+[![Tests](https://github.com/dainiusjocas/lucene-custom-analyzer/actions/workflows/test.yml/badge.svg)](https://github.com/dainiusjocas/lucene-custom-analyzer/actions/workflows/test.yml)
+
 # lucene-custom-analyzer
 
 (Micro)Library to build [Lucene](https://lucene.apache.org) analyzers in a data-driven fashion.
@@ -15,8 +19,7 @@
 Dependencies:
 
 ```clojure
-{:deps {lt.jocas/lucene-custom-analyzer {:git/url "https://github.com/dainiusjocas/lucene-custom-analyzer.git"
-                                         :sha "5fc85d7ec2e58348964c5e1dd4ba8f050194597a"}}}
+lt.jocas/lucene-custom-analyzer {:mvn/version "1.0.14"}
 ```
 
 Code:
