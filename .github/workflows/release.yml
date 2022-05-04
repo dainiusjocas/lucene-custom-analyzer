@@ -7,7 +7,6 @@ on:
 
 jobs:
   build-and-release:
-    needs: [linting, unit-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.0.2
@@ -30,6 +29,10 @@ jobs:
             ~/.clojure
             ~/.cpcache
           key: ${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
+
+      - name: Unit Tests first before releasing
+        run: clojure -M:test
+
       - name: Deploy Release
         run: clojure -T:build deploy :snapshot false
         env:

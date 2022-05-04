@@ -4,5 +4,5 @@
  :tasks          {release
                   {:requires ([clojure.string :as str])
                    :doc      "Makes a git tag and push it to the Github to trigger release with GH action."
-                   :task     (let [command (str/join " " (concat ["-T:build trigger-release"] *command-line-args*))]
+                   :task     (let [command (str/join " " (concat ["-T:build trigger-release"] (or *command-line-args* [:snapshot false])))]
                                (clojure command))}}}
