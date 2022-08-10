@@ -3,9 +3,13 @@
             [lucene.custom.analyzer :as analyzer]))
 
 (deftest custom-analyzer-validation
+  (testing "analysis component can't be nil"
+    (is (thrown? AssertionError (analyzer/create {:char-filters [nil]})))
+    (is (thrown? AssertionError (analyzer/create {:token-filters [nil]}))))
+
   (testing "tokenizer config"
     (let [tokenizer-config-as-string "FAIL"]
-      (is (thrown? AssertionError
+      (is (thrown? Exception
                    (analyzer/create
                      {:tokenizer tokenizer-config-as-string}))))
 

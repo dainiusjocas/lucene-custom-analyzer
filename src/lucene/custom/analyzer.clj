@@ -16,21 +16,21 @@
 (defn tokenizer-factories
   "Returns a map of available tokenizer factories: <String, Class>"
   []
-  (reduce (fn [acc ^String tokenizer-name]
+  (reduce (fn tokenizer-name->class [acc ^String tokenizer-name]
             (assoc acc tokenizer-name (TokenizerFactory/lookupClass tokenizer-name)))
           {} (TokenizerFactory/availableTokenizers)))
 
 (defn char-filter-factories
   "Returns a map of available char filter factories: <String, Class>"
   []
-  (reduce (fn [acc ^String char-filter-name]
+  (reduce (fn char-filter-name->class [acc ^String char-filter-name]
             (assoc acc char-filter-name (CharFilterFactory/lookupClass char-filter-name)))
           {} (CharFilterFactory/availableCharFilters)))
 
 (defn token-filter-factories
   "Returns a map of available token filter factories: <String, Class>"
   []
-  (reduce (fn [acc ^String token-filter-name]
+  (reduce (fn token-filter->class [acc ^String token-filter-name]
             (assoc acc token-filter-name (TokenFilterFactory/lookupClass token-filter-name)))
           {} (TokenFilterFactory/availableTokenFilters)))
 
@@ -49,6 +49,11 @@
                   component-name
                   (sort (keys factories)))))))
 
+(defn handle-short-notation [analysis-component]
+  (first (if (or (string? analysis-component) (keyword? analysis-component))
+           {analysis-component nil}
+           analysis-component)))
+
 (defn create
   "Constructs a Lucene Analyzer using the CustomAnalyzer builder.
    Under the hood it uses the factory classes TokenizerFactory, TokenFilterFactory, and CharFilterFactory.
@@ -58,6 +63,7 @@
    `
    {ComponentNameKeywordOrString MapOfParams}
    `
+   Or when the MapOfParams is empty then only ComponentNameKeywordOrString can be passed.
 
    If needed factories can be passed as arguments in shape:
    `
@@ -70,6 +76,13 @@
     :char-filters [{\"patternReplace\" {:pattern \"foo\", :replacement \"foo\"}}]
     :token-filters [{\"uppercase\" nil} {\"reverseString\" nil}]
     :config-dir \".\"}
+   `
+
+   Short notation:
+   `
+   {:tokenizer :standard
+    :char-filters [:htmlStrip]
+    :token-filters [:uppercase]}
    `
 
    `opts` map can specify these keys:
@@ -91,9 +104,9 @@
      (assert (or (nil? token-filters) (sequential? token-filters))
              (format "Token filters should be a list, was '%s'" token-filters))
 
-     (assert (or (nil? tokenizer) (map? tokenizer))
+     (assert (or (nil? tokenizer) (map? tokenizer) (string? tokenizer) (keyword? tokenizer))
              (format "Tokenizer must have 'name' and optional 'params', but was '%s'" tokenizer))
-     (let [[tokenizer-name params] (first tokenizer)]
+     (let [[tokenizer-name params] (handle-short-notation tokenizer)]
        (.withTokenizer builder
                        ^Class (get-component-or-exception tokenizer-factories
                                                           (or tokenizer-name DEFAULT_TOKENIZER_NAME)
@@ -102,8 +115,8 @@
                        ^Map (prepare-params params)))
 
      (doseq [char-filter char-filters]
-       (let [[char-filter-name params] (first char-filter)]
-         (assert (or (nil? params) (map? params))
+       (let [[char-filter-name params] (handle-short-notation char-filter)]
+         (assert (and (not (nil? char-filter)) (or (nil? params) (map? params)))
                  (format "Character filter must have 'name' and optional 'params', but was '%s'" char-filter))
          (.addCharFilter builder
                          ^Class (get-component-or-exception char-filter-factories
@@ -113,8 +126,8 @@
                          ^Map (prepare-params params))))
 
      (doseq [token-filter token-filters]
-       (let [[token-filter-name params] (first token-filter)]
-         (assert (or (nil? params) (map? params))
+       (let [[token-filter-name params] (handle-short-notation token-filter)]
+         (assert (and (not (nil? token-filter)) (or (nil? params) (map? params)))
                  (format "Token filter must have 'name' and optional 'params', but was '%s'" token-filter))
          (.addTokenFilter builder
                           ^Class (get-component-or-exception token-filter-factories
@@ -136,4 +149,11 @@
      :char-filters  [{:patternReplace {:pattern     "foo"
                                        :replacement "foo"}}]
      :token-filters [{:uppercase nil}
-                     {:reverseString nil}]}))
+                     {:reverseString nil}]})
+
+  (lucene.custom.analyzer/create
+    {:tokenizer     {:standard {:maxTokenLength 4}}
+     :char-filters  [{:patternReplace {:pattern     "foo"
+                                       :replacement "foo"}}]
+     :token-filters [{:uppercase nil}
+                     :reverseString]}))

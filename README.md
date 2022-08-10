@@ -42,6 +42,19 @@ Code:
 ;;         "CustomAnalyzer(org.apache.lucene.analysis.pattern.PatternReplaceCharFilterFactory@2f1300,org.apache.lucene.analysis.standard.StandardTokenizerFactory@7e71a244,org.apache.lucene.analysis.core.UpperCaseFilterFactory@54e9f0d6,org.apache.lucene.analysis.reverse.ReverseStringFilterFactory@3e494ba7)"]
 ```
 
+Short notation for analysis components:
+
+```clojure
+(custom-analyzer/create
+  {:tokenizer :standard
+   :char-filters [:htmlStrip]
+   :token-filters [:uppercase]})
+;; =>
+;; #object[org.apache.lucene.analysis.custom.CustomAnalyzer
+;;        0x16716eb1
+;;        "CustomAnalyzer(org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory@4c7f61fa,org.apache.lucene.analysis.standard.StandardTokenizerFactory@6fc69052,org.apache.lucene.analysis.core.UpperCaseFilterFactory@3944ccba)"]
+```
+
 If no options are provided then an Analyzer with just the standard tokenizer is created:
 
 ```clojure
