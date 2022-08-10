@@ -18,6 +18,14 @@
 
     (let [analyzer (analyzer/create {:tokenizer {"keyword" nil}})]
       (is (= KeywordTokenizerFactory
+             (class (.getTokenizerFactory ^CustomAnalyzer analyzer)))))
+
+    (let [analyzer (analyzer/create {:tokenizer "keyword"})]
+      (is (= KeywordTokenizerFactory
+             (class (.getTokenizerFactory ^CustomAnalyzer analyzer)))))
+
+    (let [analyzer (analyzer/create {:tokenizer :keyword})]
+      (is (= KeywordTokenizerFactory
              (class (.getTokenizerFactory ^CustomAnalyzer analyzer))))))
 
   (testing "char filter params handling"
@@ -29,6 +37,15 @@
     (let [analyzer (analyzer/create {:char-filters [{"htmlStrip" nil} {"htmlStrip" nil}]})]
       (is (= 2 (count (.getCharFilterFactories ^CustomAnalyzer analyzer))))
       (is (= [HTMLStripCharFilterFactory HTMLStripCharFilterFactory]
+             (map #(class %) (.getCharFilterFactories ^CustomAnalyzer analyzer)))))
+
+    (let [analyzer (analyzer/create {:char-filters [{"htmlStrip" nil} "htmlStrip"]})]
+      (is (= 2 (count (.getCharFilterFactories ^CustomAnalyzer analyzer))))
+      (is (= [HTMLStripCharFilterFactory HTMLStripCharFilterFactory]
+             (map #(class %) (.getCharFilterFactories ^CustomAnalyzer analyzer)))))
+    (let [analyzer (analyzer/create {:char-filters [:htmlStrip "htmlStrip"]})]
+      (is (= 2 (count (.getCharFilterFactories ^CustomAnalyzer analyzer))))
+      (is (= [HTMLStripCharFilterFactory HTMLStripCharFilterFactory]
              (map #(class %) (.getCharFilterFactories ^CustomAnalyzer analyzer))))))
 
   (testing "token filter params handling"
@@ -38,6 +55,16 @@
              (map #(class %) (.getTokenFilterFactories ^CustomAnalyzer analyzer)))))
 
     (let [analyzer (analyzer/create {:token-filters [{"asciiFolding" nil} {"lowercase" nil}]})]
+      (is (= 2 (count (.getTokenFilterFactories ^CustomAnalyzer analyzer))))
+      (is (= [ASCIIFoldingFilterFactory LowerCaseFilterFactory]
+             (map #(class %) (.getTokenFilterFactories ^CustomAnalyzer analyzer)))))
+
+    (let [analyzer (analyzer/create {:token-filters [{"asciiFolding" nil} "lowercase"]})]
+      (is (= 2 (count (.getTokenFilterFactories ^CustomAnalyzer analyzer))))
+      (is (= [ASCIIFoldingFilterFactory LowerCaseFilterFactory]
+             (map #(class %) (.getTokenFilterFactories ^CustomAnalyzer analyzer)))))
+
+    (let [analyzer (analyzer/create {:token-filters [{"asciiFolding" nil} :lowercase]})]
       (is (= 2 (count (.getTokenFilterFactories ^CustomAnalyzer analyzer))))
       (is (= [ASCIIFoldingFilterFactory LowerCaseFilterFactory]
              (map #(class %) (.getTokenFilterFactories ^CustomAnalyzer analyzer))))))
