@@ -4,6 +4,8 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+## 1.0.18 (2022-08-10)
+
 - Short notation for analysis components.
 
 ## 1.0.18 (2022-07-29)

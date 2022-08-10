@@ -19,7 +19,7 @@
 Dependencies:
 
 ```clojure
-lt.jocas/lucene-custom-analyzer {:mvn/version "1.0.18"}
+lt.jocas/lucene-custom-analyzer {:mvn/version "1.0.21"}
 ```
 
 Code:
