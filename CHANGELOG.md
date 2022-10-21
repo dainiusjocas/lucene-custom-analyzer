@@ -4,6 +4,10 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+## 1.0.24 (2022-10-21)
+
+- Upgrade Lucene to 9.4.0
+
 ## 1.0.18 (2022-08-10)
 
 - Short notation for analysis components.
