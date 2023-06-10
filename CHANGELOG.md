@@ -4,6 +4,8 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+- Upgrade Lucene to 9.6.0
+
 ## 1.0.24 (2022-10-21)
 
 - Upgrade Lucene to 9.4.0
