@@ -13,13 +13,14 @@
 - Allows for extensibility using standard [Lucene SPI](https://lucene.apache.org/core/9_1_0/core/org/apache/lucene/analysis/AnalysisSPILoader.html), i.e. just put a JAR in the CLASSPATH.
 - Allows to specify a directory from which resources will be loaded, e.g. synonyms dictionaries.
 - Lucene 9+ supported.
+- Already includes the most commonly used Lucene analysis components.
 
 ## Quickstart
 
 Dependencies:
 
 ```clojure
-lt.jocas/lucene-custom-analyzer {:mvn/version "1.0.21"}
+lt.jocas/lucene-custom-analyzer {:mvn/version "1.0.28"}
 ```
 
 Code:
