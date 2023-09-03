@@ -1,5 +1,7 @@
 (ns lucene.custom.analyzer-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.java.io :as io]
+            [clojure.test :refer [deftest is testing]]
+            [lucene.custom.text-analysis :as analysis]
             [lucene.custom.analyzer :as analyzer])
   (:import (org.apache.lucene.analysis Analyzer)
            (org.apache.lucene.analysis.custom CustomAnalyzer)
@@ -73,4 +75,18 @@
     (let [^CustomAnalyzer analyzer (analyzer/create {:offset-gap             12
                                                      :position-increment-gap 3})]
       (is (= 12 (.getOffsetGap analyzer "")))
-      (is (= 3 (.getPositionIncrementGap analyzer ""))))))
+      (is (= 3 (.getPositionIncrementGap analyzer "")))))
+
+  (testing "config-dir variants: filesystem and resources"
+    (let [file "test/resources/stopwords.txt"
+          file-in-resources "stopwords.txt"
+          ^Analyzer analyzer-fs
+          (analyzer/create {:config-dir    "."
+                            :token-filters [{:stop {:words file}}]})
+          ^Analyzer analyzer-classpath
+          (analyzer/create {:classpath-resources true
+                            :token-filters       [{:stop {:words file-in-resources}}]})]
+      (is (= ["baz"] (analysis/text->token-strings "foo bar baz" analyzer-fs)))
+      (is (= "foo\nbar\n" (slurp file)))
+      (is (= "foo\nbar\n" (slurp (io/resource file-in-resources))))
+      (is (= ["baz"] (analysis/text->token-strings "foo bar baz" analyzer-classpath))))))

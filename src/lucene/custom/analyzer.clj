@@ -5,6 +5,8 @@
            (org.apache.lucene.analysis.custom CustomAnalyzer CustomAnalyzer$Builder)
            (org.apache.lucene.analysis Analyzer CharFilterFactory TokenFilterFactory TokenizerFactory)))
 
+(set! *warn-on-reflection* true)
+
 (defn- prepare-params
   "Converts associative collection into a HashMap<String, String> as expected by Lucene.
   HashMap because the map must be modifiable."
@@ -87,6 +89,7 @@
 
    `opts` map can specify these keys:
      - config-dir: path to directory from which resources will be loaded, default '.'
+     - classpath-resources: when true and :config-dir is nil then loads resources from classpath
      - char-filters: list of char filter descriptions
      - tokenizer: tokenizer description, default 'standard' tokenizer
      - token-filters: list of token filter descriptions
@@ -95,10 +98,12 @@
      - namify-fn: function that changes the string identifier of the service name, e.g. str/lowercase, default: identity"
   (^Analyzer [opts] (create opts (char-filter-factories) (tokenizer-factories) (token-filter-factories)))
   (^Analyzer [{:keys [config-dir char-filters tokenizer token-filters namify-fn
-                      position-increment-gap offset-gap]}
+                      position-increment-gap offset-gap classpath-resources]}
               char-filter-factories tokenizer-factories token-filter-factories]
    (let [namify-fn (or namify-fn identity)
-         ^CustomAnalyzer$Builder builder (CustomAnalyzer/builder ^Path (config-dir->path config-dir))]
+         ^CustomAnalyzer$Builder builder (if (and (true? classpath-resources) (nil? config-dir))
+                                           (CustomAnalyzer/builder)
+                                           (CustomAnalyzer/builder ^Path (config-dir->path config-dir)))]
      (assert (or (nil? char-filters) (sequential? char-filters))
              (format "Character filters should be a list, was '%s'" char-filters))
      (assert (or (nil? token-filters) (sequential? token-filters))
