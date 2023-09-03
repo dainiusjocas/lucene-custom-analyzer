@@ -31,4 +31,4 @@ jobs:
 
       - name: Unit Tests
         run: |
-          clojure -M:test
+          clojure -M:dev:test

@@ -2,7 +2,9 @@
  :deps  {org.apache.lucene/lucene-core            {:mvn/version "9.7.0"}
          org.apache.lucene/lucene-analysis-common {:mvn/version "9.7.0"}}
  :aliases
- {:test  {:extra-paths ["test" "test/resources"]
+ {:dev   {:extra-paths ["dev" "test" "test/resources"]
+          :extra-deps  {lt.jocas/lucene-text-analysis {:mvn/version "1.0.26"}}}
+  :test  {:extra-paths ["test" "test/resources"]
           :extra-deps  {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
           :main-opts   ["-m" "cognitect.test-runner"]}
   ;; for help: clojure -A:deps -T:build help/doc
