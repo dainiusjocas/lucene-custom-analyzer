@@ -31,7 +31,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
 
       - name: Unit Tests first before releasing
-        run: clojure -M:test
+        run: clojure -M:dev:test
 
       - name: Deploy Release
         run: clojure -T:build deploy :snapshot false
