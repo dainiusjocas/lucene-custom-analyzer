@@ -4,6 +4,12 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+- Support resource loading from the classpath #7
+
+## 1.0.30
+
+- Upgrade Lucene to 9.7.0
+
 ## 1.0.28 (2023-06-17)
 
 - Upgrade Lucene to 9.6.0
