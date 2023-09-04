@@ -3,7 +3,8 @@
             [clojure.test :refer [deftest is testing]]
             [lucene.custom.text-analysis :as analysis]
             [lucene.custom.analyzer :as analyzer])
-  (:import (org.apache.lucene.analysis Analyzer)
+  (:import (java.util ArrayList HashMap)
+           (org.apache.lucene.analysis Analyzer)
            (org.apache.lucene.analysis.custom CustomAnalyzer)
            (org.apache.lucene.analysis.standard StandardTokenizerFactory)
            (org.apache.lucene.analysis.core KeywordTokenizerFactory LowerCaseFilterFactory)
@@ -76,6 +77,13 @@
                                                      :position-increment-gap 3})]
       (is (= 12 (.getOffsetGap analyzer "")))
       (is (= 3 (.getPositionIncrementGap analyzer "")))))
+
+  (testing "config with raw array list"
+    (let [analyzer (analyzer/create (doto (HashMap.)
+                                      (.put :token-filters (doto (ArrayList.)
+                                                             (.add :reverseString)))))]
+      (is (= ["oof" "rab" "zab"]
+             (analysis/text->token-strings "foo bar baz" analyzer)))))
 
   (testing "config-dir variants: filesystem and resources"
     (let [file "test/resources/stopwords.txt"
