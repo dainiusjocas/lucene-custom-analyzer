@@ -3,7 +3,7 @@
             [clojure.test :refer [deftest is testing]]
             [lucene.custom.text-analysis :as analysis]
             [lucene.custom.analyzer :as analyzer])
-  (:import (java.util ArrayList)
+  (:import (java.util ArrayList HashMap)
            (org.apache.lucene.analysis Analyzer)
            (org.apache.lucene.analysis.custom CustomAnalyzer)
            (org.apache.lucene.analysis.standard StandardTokenizerFactory)
@@ -79,7 +79,9 @@
       (is (= 3 (.getPositionIncrementGap analyzer "")))))
 
   (testing "config with raw array list"
-    (let [analyzer (analyzer/create {:token-filters (doto (ArrayList.) (.add :reverseString))})]
+    (let [analyzer (analyzer/create (doto (HashMap.)
+                                      (.put :token-filters (doto (ArrayList.)
+                                                             (.add :reverseString)))))]
       (is (= ["oof" "rab" "zab"]
              (analysis/text->token-strings "foo bar baz" analyzer)))))
 
