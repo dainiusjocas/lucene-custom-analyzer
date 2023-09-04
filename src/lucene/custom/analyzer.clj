@@ -1,5 +1,5 @@
 (ns lucene.custom.analyzer
-  (:import (java.util HashMap Map)
+  (:import (java.util HashMap List Map)
            (java.io File)
            (java.nio.file Path)
            (org.apache.lucene.analysis.custom CustomAnalyzer CustomAnalyzer$Builder)
@@ -104,9 +104,9 @@
          ^CustomAnalyzer$Builder builder (if (and (true? classpath-resources) (nil? config-dir))
                                            (CustomAnalyzer/builder)
                                            (CustomAnalyzer/builder ^Path (config-dir->path config-dir)))]
-     (assert (or (nil? char-filters) (sequential? char-filters))
+     (assert (or (nil? char-filters) (instance? List char-filters))
              (format "Character filters should be a list, was '%s'" char-filters))
-     (assert (or (nil? token-filters) (sequential? token-filters))
+     (assert (or (nil? token-filters) (instance? List token-filters))
              (format "Token filters should be a list, was '%s'" token-filters))
 
      (assert (or (nil? tokenizer) (map? tokenizer) (string? tokenizer) (keyword? tokenizer))
