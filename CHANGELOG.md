@@ -4,6 +4,8 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+## 1.0.34 (2023-09-04)
+
 - Support config in mutable containers #9
 
 ## 1.0.32 (2023-09-03)
