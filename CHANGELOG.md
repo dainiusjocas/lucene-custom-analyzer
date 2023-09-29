@@ -4,6 +4,8 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+- Upgrade Lucene to 9.8.0
+
 ## 1.0.34 (2023-09-04)
 
 - Support config in mutable containers #9
