@@ -4,7 +4,11 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
-- Upgrade Lucene to 9.8.0
+- Upgrade Lucene to 9.8.0 (#12)
+
+## 1.0.36 (2023-09-27)
+
+- feat: constructors for PerFieldAnalyzerWrapper (#11)
 
 ## 1.0.34 (2023-09-04)
 
