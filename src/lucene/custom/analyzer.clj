@@ -1,8 +1,10 @@
 (ns lucene.custom.analyzer
-  (:import (java.util HashMap List Map)
+  (:require [clojure.string :as str])
+  (:import (java.util HashMap LinkedHashMap List Map Map$Entry)
            (java.io File)
            (java.nio.file Path)
-           (org.apache.lucene.analysis.custom CustomAnalyzer CustomAnalyzer$Builder)
+           (java.util.function Predicate)
+           (org.apache.lucene.analysis.custom CustomAnalyzer CustomAnalyzer$Builder CustomAnalyzer$ConditionBuilder)
            (org.apache.lucene.analysis Analyzer CharFilterFactory TokenFilterFactory TokenizerFactory)))
 
 (set! *warn-on-reflection* true)
@@ -55,6 +57,27 @@
   (first (if (or (string? analysis-component) (keyword? analysis-component))
            {analysis-component nil}
            analysis-component)))
+
+(defn get-wrapped-filters
+  "Returns a with {filter-name {key val}}"
+  [^Map params]
+  (let [filter-ids (reduce (fn [^Map acc filter-id]
+                             (doto acc (.put filter-id (HashMap.))))
+                           (LinkedHashMap.) (str/split (or (get params "wrappedFilters") "") #","))]
+    (.remove params "pattern")
+    (.remove params "wrappedFilters")
+    (doseq [^Map$Entry me (.entrySet params)]
+      (let [config-attr-key (.getKey me)
+            config-value (.getValue me)
+            [filter-id attr-key] (str/split config-attr-key #"\.")]
+        (.put ^Map (get filter-ids filter-id) attr-key config-value)))
+    filter-ids))
+
+(defn add-token-filters [^CustomAnalyzer$ConditionBuilder builder params]
+  (let [^Map inner-token-filters (get-wrapped-filters params)]
+    (doseq [^Map$Entry me (.entrySet inner-token-filters)]
+      (let [^String token-filter-name (str/replace (.getKey me) #"-.*$" "")]
+        (.addTokenFilter builder token-filter-name ^Map (.getValue me))))))
 
 (defn create
   "Constructs a Lucene Analyzer using the CustomAnalyzer builder.
@@ -134,12 +157,23 @@
        (let [[token-filter-name params] (handle-short-notation token-filter)]
          (assert (and (not (nil? token-filter)) (or (nil? params) (map? params)))
                  (format "Token filter must have 'name' and optional 'params', but was '%s'" token-filter))
-         (.addTokenFilter builder
-                          ^Class (get-component-or-exception token-filter-factories
-                                                             token-filter-name
-                                                             "Token filter"
-                                                             namify-fn)
-                          ^Map (prepare-params params))))
+         (if (or (= :conditional token-filter-name)
+                 (= "conditional" token-filter-name))
+           (let [params (prepare-params params)
+                 pattern (re-pattern (get params "pattern"))
+                 pred (reify Predicate
+                        (test [_ termAtt]
+                          (some?
+                            (re-matches pattern termAtt))))]
+             (doto (.whenTerm builder pred)
+               (add-token-filters params)
+               (.endwhen)))
+           (.addTokenFilter builder
+                            ^Class (get-component-or-exception token-filter-factories
+                                                               token-filter-name
+                                                               "Token filter"
+                                                               namify-fn)
+                            ^Map (prepare-params params)))))
 
      (when position-increment-gap
        (.withPositionIncrementGap builder position-increment-gap))
