@@ -97,4 +97,13 @@
       (is (= ["baz"] (analysis/text->token-strings "foo bar baz" analyzer-fs)))
       (is (= "foo\nbar\n" (slurp file)))
       (is (= "foo\nbar\n" (slurp (io/resource file-in-resources))))
-      (is (= ["baz"] (analysis/text->token-strings "foo bar baz" analyzer-classpath))))))
+      (is (= ["baz"] (analysis/text->token-strings "foo bar baz" analyzer-classpath)))))
+
+  (testing "conditional token filter"
+    (let [^Analyzer analyzer (analyzer/create {:token-filters
+                                               [{:conditional {:pattern               "f.*"
+                                                               :wrappedFilters        "edgeNGram,uppercase"
+                                                               :edgeNGram.minGramSize 1
+                                                               :edgeNGram.maxGramSize 5}}
+                                                :reverseString]})]
+      (is (= ["F" "OF" "OOF" "rab" "zab"] (analysis/text->token-strings "foo bar baz" analyzer))))))
